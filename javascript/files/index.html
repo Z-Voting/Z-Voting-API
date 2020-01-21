@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Site</title>
+</head>
+
+<body>
+    <div>
+        <center>
+            <a href="/viewAllMovies"><button>View all Movies</button></a>
+        </center>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <div>
+        <center> <u> Insert a movie </u> <br><br>
+            <form action="/insertMovie" method="POST">
+                <label for="name">Name: </label>
+                <input type="text" name="name" id="name"> <br><br>
+
+                <label for="director">Director: </label>
+                <input type="text" name="director" id="director"> <br><br>
+
+                <label for="year">Year: </label>
+                <input type="text" name="year" id="year"> <br><br>
+
+                <label for="genre">Genre: </label>
+                <input type="text" name="genre" id="genre"> <br><br>
+
+                <input type="submit" name="submit" id="submit">
+            </form>
+        </center>
+
+    </div>
+    <br>
+    <br>
+    <br>
+    <div>
+            <center> <u> Search movies by year: </u> <br><br>
+                <form action="/queryMoviesByYear" method="POST">    
+                    <label for="year">Year: </label>
+                    <input type="text" name="year" id="year"> <br><br>
+    
+                    <input type="submit" name="submit" id="submit">
+                </form>
+            </center>
+    
+        </div>
+<br>
+<br>
+<br>
+        <div>
+                <center> <u> Search movies by genre: </u> <br><br>
+                    <form action="/queryMoviesByGenre" method="POST">    
+                        <label for="genre">Genre: </label>
+                        <input type="text" name="genre" id="genre"> <br><br>
+        
+                        <input type="submit" name="submit" id="submit">
+                    </form>
+                </center>
+        
+            </div>
+
+</body>
+
+</html>

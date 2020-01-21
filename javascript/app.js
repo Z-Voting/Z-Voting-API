@@ -278,23 +278,20 @@ async function main() {
         app.post('/voterLogin', voterLoginHandler);
 
         let castVoteHandler = async (req, res) => {
-            let name = req.body.name.toString(),
-                email = req.body.email.toString(),
-                voteContent = req.body.voteContent.toString(),
-                electionId = req.body.electionId.toString();
+            let email = req.body.email.toString(),
+                voteContent = req.body.voteContent.toString();
 
-
-            let debug = true;
+            let debug = false;
             if (debug) {
-                res.send(concat(name, email, voteContent, electionId));
+                res.send(concat(email, voteContent));
                 return;
             } else {
-                contract.submitTransaction('castVote', name, email, voteContent, electionId).then((data) => {
+                contract.submitTransaction('castVote', email, voteContent).then((data) => {
                     console.log(data);
                     let msg = {
                         status: 'success',
-                        data: data.toString(),
-                        message: 'Voter Added'
+                        data: JSON.parse(data),
+                        message: 'Vote Cast Successful'
                     };
                     res.send(msg);
                 }).catch((err) => {
@@ -308,6 +305,65 @@ async function main() {
             }
         };
         app.post('/castVote', castVoteHandler);
+
+
+        let calculateResultHandler = async (req, res) => {
+            let electionId = req.body.electionId.toString();
+
+            let debug = false;
+            if (debug) {
+                res.send(concat(electionId));
+                return;
+            } else {
+                contract.evaluateTransaction('calculateResult', electionId).then((data) => {
+                    console.log(data);
+                    let msg = {
+                        status: 'success',
+                        data: JSON.parse(data),
+                        message: ''
+                    };
+                    res.send(msg);
+                }).catch((err) => {
+                    console.log(err);
+                    let msg = {
+                        status: 'failure',
+                        message: err.toString()
+                    };
+                    res.send(msg);
+                });
+            }
+        };
+        app.post('/calculateResult', calculateResultHandler);
+
+
+        let startElectionHandler = async (req, res) => {
+            let electionId = req.body.electionId.toString();
+
+            let debug = false;
+            if (debug) {
+                res.send(concat(electionId));
+                return;
+            } else {
+                contract.submitTransaction('startElection', electionId).then((data) => {
+                    console.log(data);
+                    let msg = {
+                        status: 'success',
+                        data: data.toString(),
+                        message: ''
+                    };
+                    res.send(msg);
+                }).catch((err) => {
+                    console.log(err);
+                    let msg = {
+                        status: 'failure',
+                        message: err.toString()
+                    };
+                    res.send(msg);
+                });
+            }
+        };
+        app.post('/startElection', startElectionHandler);
+
 
         app.get('/', function (req, res) {
             res.sendFile(__dirname + '/files/' + 'index.html');

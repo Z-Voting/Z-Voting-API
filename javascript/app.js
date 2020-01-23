@@ -267,7 +267,7 @@ async function main() {
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(JSON.stringify({email, x, a1, a2, a3, v1, v2, v3, y1}));
+                res.send(JSON.stringify({ email, x, a1, a2, a3, v1, v2, v3, y1 }));
                 return;
             } else {
                 contract.evaluateTransaction('voterLogin', email, x, a1, a2, a3, v1, v2, v3, y1).then((data) => {
@@ -300,7 +300,7 @@ async function main() {
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(JSON.stringify({email, electionID, voteContent}));
+                res.send(JSON.stringify({ email, electionID, voteContent }));
             } else {
                 contract.submitTransaction('castVote', email, voteContent).then((data) => {
                     console.log(data);
@@ -335,8 +335,13 @@ async function main() {
                 return;
             } else {
                 contract.evaluateTransaction('calculateResult', electionId).then((data) => {
-                    console.log(data.toString());
-                    res.send(data.toString());
+                    let ret = JSON.parse(data.toString());
+
+                    contract.evaluateTransaction('getCandidates', electionId).then((data) => {
+                        ret.candidates = JSON.parse(data.toString());
+
+                        res.send(JSON.stringify(ret));
+                    });
                 }).catch((err) => {
                     console.log(err.toString());
                     res.setHeader('content-type', 'text/json');
@@ -354,7 +359,11 @@ async function main() {
                         doctype: 'ElectionResult'
                     };
 
-                    res.send(JSON.stringify(ret));
+                    contract.evaluateTransaction('getCandidates', electionId).then((data) => {
+                        ret.candidates = JSON.parse(data.toString());
+
+                        res.send(JSON.stringify(ret));
+                    });
                 });
             }
         };

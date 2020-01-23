@@ -267,7 +267,7 @@ async function main() {
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(concat(email, x, a1, a2, a3, v1, v2, v3, y1));
+                res.send(JSON.stringify({email, x, a1, a2, a3, v1, v2, v3, y1}));
                 return;
             } else {
                 contract.evaluateTransaction('voterLogin', email, x, a1, a2, a3, v1, v2, v3, y1).then((data) => {
@@ -294,13 +294,13 @@ async function main() {
 
         let castVoteHandler = async (req, res) => {
             let email = req.body.email.toString(),
+                electionID = req.body.electionID.toString(),
                 voteContent = req.body.voteContent.toString();
 
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(concat(email, voteContent));
-                return;
+                res.send(JSON.stringify({email, electionID, voteContent}));
             } else {
                 contract.submitTransaction('castVote', email, voteContent).then((data) => {
                     console.log(data);

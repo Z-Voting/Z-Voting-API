@@ -78,6 +78,7 @@ async function main() {
             let result = await contract.evaluateTransaction('getRandom', seed);
             result = JSON.parse(result);
             randomData.data = result;
+            res.setHeader('content-type', 'text/json');
             res.send(randomData);
         });
 
@@ -85,18 +86,21 @@ async function main() {
             let seed = req.body.seed.toString();
             let result = await contract.evaluateTransaction('getRandom', seed);
             // result = JSON.parse(result);
+            res.setHeader('content-type', 'text/json');
             res.send(result);
         });
 
         app.get('/generateUID', async (req, res) => {
             let result = await contract.evaluateTransaction('generateUID');
             // result = JSON.parse(result);
+            res.setHeader('content-type', 'text/json');
             res.send(result);
         });
 
         app.post('/generateUID', async (req, res) => {
             let result = await contract.evaluateTransaction('generateUID');
             // result = JSON.parse(result);
+            res.setHeader('content-type', 'text/json');
             res.send(result);
         });
 
@@ -105,7 +109,8 @@ async function main() {
             let electionDuration = req.body.electionDuration.toString();
 
             // console.log(electionName, electionDuration);
-            // res.send(electionName + electionDuration);
+            // res.setHeader('content-type', 'text/json');
+            res.send(electionName + electionDuration);
 
             let promise = contract.submitTransaction('createElection', electionName, electionDuration);
             promise.then((data) => {
@@ -116,6 +121,7 @@ async function main() {
                     message: 'Election Created'
                 };
 
+                res.setHeader('content-type', 'text/json');
                 res.send(msg);
             }).catch((err) => {
                 console.log(err);
@@ -125,6 +131,7 @@ async function main() {
                     message: err.toString()
                 };
 
+                res.setHeader('content-type', 'text/json');
                 res.send(msg);
             });
 
@@ -134,7 +141,8 @@ async function main() {
         let getElectionsHandler = async (req, res) => {
             let result = await contract.evaluateTransaction('getElections');
             // result = JSON.parse(result);
-            res.send(result);
+            res.setHeader('content-type', 'text/json');
+            res.send(result.toString());
         };
         app.get('/getElections', getElectionsHandler);
         app.post('/getElections', getElectionsHandler);
@@ -147,7 +155,8 @@ async function main() {
 
             let debug = false;
             if (debug) {
-                res.send(concat(name, sign, imgAddress, electionId));
+                res.setHeader('content-type', 'text/json');
+                res.send(JSON.stringify({ name, sign, imgAddress, electionId }));
                 return;
             } else {
                 contract.submitTransaction('addCandidate', name, sign, imgAddress, electionId).then((data) => {
@@ -156,6 +165,7 @@ async function main() {
                         status: 'success',
                         message: 'Candidate Added'
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -163,6 +173,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -174,23 +185,21 @@ async function main() {
 
             let debug = false;
             if (debug) {
+                res.setHeader('content-type', 'text/json');
                 res.send(electionId);
                 return;
             } else {
                 contract.evaluateTransaction('getCandidates', electionId).then((data) => {
-                    console.log(data);
-                    let msg = {
-                        status: 'success',
-                        data: JSON.parse(data),
-                        message: ''
-                    };
-                    res.send(msg);
+                    console.log(data.toString());
+                    res.setHeader('content-type', 'text/json');
+                    res.send(data.toString());
                 }).catch((err) => {
                     console.log(err);
                     let msg = {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -209,7 +218,8 @@ async function main() {
 
             let debug = false;
             if (debug) {
-                res.send(concat(name, email, v1, v2, v3, electionId));
+                res.setHeader('content-type', 'text/json');
+                res.send(JSON.stringify({ name, email, v1, v2, v3, electionId }));
                 return;
             } else {
                 contract.submitTransaction('registerVoter', name, email, v1, v2, v3, electionId).then((data) => {
@@ -219,6 +229,7 @@ async function main() {
                         data: data.toString(),
                         message: 'Voter Added'
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -226,6 +237,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -235,6 +247,7 @@ async function main() {
         let getLoginChallengeHandler = async (req, res) => {
             let result = await contract.evaluateTransaction('getLoginChallenge');
             // result = JSON.parse(result);
+            res.setHeader('content-type', 'text/json');
             res.send(result);
         };
         app.get('/getLoginChallenge', getLoginChallengeHandler);
@@ -254,6 +267,7 @@ async function main() {
 
             let debug = false;
             if (debug) {
+                res.setHeader('content-type', 'text/json');
                 res.send(concat(email, x, a1, a2, a3, v1, v2, v3, y1));
                 return;
             } else {
@@ -264,6 +278,7 @@ async function main() {
                         data: JSON.parse(data),
                         message: ''
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -271,6 +286,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -283,6 +299,7 @@ async function main() {
 
             let debug = false;
             if (debug) {
+                res.setHeader('content-type', 'text/json');
                 res.send(concat(email, voteContent));
                 return;
             } else {
@@ -293,6 +310,7 @@ async function main() {
                         data: JSON.parse(data),
                         message: 'Vote Cast Successful'
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -300,6 +318,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -312,6 +331,7 @@ async function main() {
 
             let debug = false;
             if (debug) {
+                res.setHeader('content-type', 'text/json');
                 res.send(concat(electionId));
                 return;
             } else {
@@ -322,6 +342,7 @@ async function main() {
                         data: JSON.parse(data),
                         message: ''
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -329,6 +350,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -341,6 +363,7 @@ async function main() {
 
             let debug = false;
             if (debug) {
+                res.setHeader('content-type', 'text/json');
                 res.send(concat(electionId));
                 return;
             } else {
@@ -351,6 +374,7 @@ async function main() {
                         data: data.toString(),
                         message: ''
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 }).catch((err) => {
                     console.log(err);
@@ -358,6 +382,7 @@ async function main() {
                         status: 'failure',
                         message: err.toString()
                     };
+                    res.setHeader('content-type', 'text/json');
                     res.send(msg);
                 });
             }
@@ -383,6 +408,7 @@ async function main() {
             let key = makeid(20);
 
             await contract.submitTransaction('createMovie', key, name, director, year, genre);
+            res.setHeader('content-type', 'text/json');
             res.send(JSON.stringify({ key, name, director, genre, year }));
 
             console.log('record added');
@@ -397,6 +423,7 @@ async function main() {
             let html = `<html><body>${resultData}</body></html>`;
 
 
+            res.setHeader('content-type', 'text/json');
             res.send(html);
         });
 
@@ -407,6 +434,7 @@ async function main() {
             //we are  going to get that code from the invoke.js file
 
             const result = await contract.evaluateTransaction('queryMoviesByYear', year);
+            res.setHeader('content-type', 'text/json');
             res.send(result.toString());
 
             console.log('query complete');
@@ -419,6 +447,7 @@ async function main() {
             //we are  going to get that code from the invoke.js file
 
             const result = await contract.evaluateTransaction('queryMoviesByGenre', genre);
+            res.setHeader('content-type', 'text/json');
             res.send(result.toString());
 
             console.log('query complete');

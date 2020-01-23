@@ -110,7 +110,6 @@ async function main() {
 
             // console.log(electionName, electionDuration);
             // res.setHeader('content-type', 'text/json');
-            res.send(electionName + electionDuration);
 
             let promise = contract.submitTransaction('createElection', electionName, electionDuration);
             promise.then((data) => {

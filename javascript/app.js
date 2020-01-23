@@ -354,7 +354,7 @@ async function main() {
                         doctype: 'ElectionResult'
                     };
 
-                    res.send(err.toString());
+                    res.send(JSON.stringify(ret));
                 });
             }
         };

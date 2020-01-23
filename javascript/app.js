@@ -335,22 +335,12 @@ async function main() {
                 return;
             } else {
                 contract.evaluateTransaction('calculateResult', electionId).then((data) => {
-                    console.log(data);
-                    let msg = {
-                        status: 'success',
-                        data: JSON.parse(data),
-                        message: ''
-                    };
-                    res.setHeader('content-type', 'text/json');
-                    res.send(msg);
+                    console.log(data.toString());
+                    res.send(data.toString());
                 }).catch((err) => {
-                    console.log(err);
-                    let msg = {
-                        status: 'failure',
-                        message: err.toString()
-                    };
+                    console.log(err.toString());
                     res.setHeader('content-type', 'text/json');
-                    res.send(msg);
+                    res.send(err.toString());
                 });
             }
         };

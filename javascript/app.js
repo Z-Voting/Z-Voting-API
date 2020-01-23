@@ -340,6 +340,20 @@ async function main() {
                 }).catch((err) => {
                     console.log(err.toString());
                     res.setHeader('content-type', 'text/json');
+
+                    let ret = {
+                        id: 'LnfgDsc2WD8F2qNfHK5aResult',
+                        publisherID: err.toString(),
+                        values: [
+                            0,
+                            0,
+                            0,
+                            0
+                        ],
+                        electionID: 'LnfgDsc2WD8F2qNfHK5a',
+                        doctype: 'ElectionResult'
+                    };
+
                     res.send(err.toString());
                 });
             }

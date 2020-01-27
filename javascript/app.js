@@ -138,10 +138,14 @@ async function main() {
         });
 
         let getElectionsHandler = async (req, res) => {
-            let result = await contract.evaluateTransaction('getElections');
-            // result = JSON.parse(result);
-            res.setHeader('content-type', 'text/json');
-            res.send(result.toString());
+            try {
+                let result = await contract.evaluateTransaction('getElections');
+                // result = JSON.parse(result);
+                res.setHeader('content-type', 'text/json');
+                res.send(result.toString());
+            } catch (e) {
+                res.send(e);
+            }
         };
         app.get('/getElections', getElectionsHandler);
         app.post('/getElections', getElectionsHandler);
@@ -262,15 +266,38 @@ async function main() {
                 v1 = req.body.v1.toString(),
                 v2 = req.body.v2.toString(),
                 v3 = req.body.v3.toString(),
-                y1 = req.body.y1.toString();
+                y1 = req.body.y1.toString(),
+                electionID = req.body.electionID.toString();
 
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(JSON.stringify({ email, x, a1, a2, a3, v1, v2, v3, y1 }));
+                res.send(JSON.stringify({ email, x, a1, a2, a3, v1, v2, v3, y1, electionID }));
                 return;
             } else {
-                contract.evaluateTransaction('voterLogin', email, x, a1, a2, a3, v1, v2, v3, y1).then((data) => {
+                try {
+                    contract.evaluateTransaction('voterLogin', email, x, a1, a2, a3, v1, v2, v3, y1, electionID).then((data) => {
+                        console.log(data);
+                        let msg = {
+                            status: 'success',
+                            data: JSON.parse(data),
+                            message: ''
+                        };
+                        res.setHeader('content-type', 'text/json');
+                        res.send(msg);
+                    }).catch((err) => {
+                        console.log(err);
+                        let msg = {
+                            status: 'failure',
+                            message: err.toString()
+                        };
+                        res.setHeader('content-type', 'text/json');
+                        res.send(msg);
+                    });
+                } catch (e) {
+                    res.send(e);
+                }
+                contract.evaluateTransaction('voterLogin', email, x, a1, a2, a3, v1, v2, v3, y1, electionID).then((data) => {
                     console.log(data);
                     let msg = {
                         status: 'success',
@@ -293,33 +320,42 @@ async function main() {
         app.post('/voterLogin', voterLoginHandler);
 
         let castVoteHandler = async (req, res) => {
-            let email = req.body.email.toString(),
-                electionID = req.body.electionID.toString(),
+            let id = req.body.id.toString(),
                 voteContent = req.body.voteContent.toString();
 
             let debug = false;
             if (debug) {
                 res.setHeader('content-type', 'text/json');
-                res.send(JSON.stringify({ email, electionID, voteContent }));
+                res.send(JSON.stringify({ id, voteContent }));
             } else {
-                contract.submitTransaction('castVote', email, voteContent).then((data) => {
-                    console.log(data);
-                    let msg = {
-                        status: 'success',
-                        data: JSON.parse(data),
-                        message: 'Vote Cast Successful'
-                    };
-                    res.setHeader('content-type', 'text/json');
-                    res.send(msg);
-                }).catch((err) => {
-                    console.log(err);
-                    let msg = {
-                        status: 'failure',
-                        message: err.toString()
-                    };
-                    res.setHeader('content-type', 'text/json');
-                    res.send(msg);
-                });
+                try {
+                    let data = await contract.evaluateTransaction('castVote', id, voteContent);
+                    if (data === null) {
+                        throw new Error(400);
+                    }
+
+                    contract.submitTransaction('castVote', id, voteContent).then((data) => {
+                        console.log(data);
+                        let msg = {
+                            status: 'success',
+                            data: JSON.parse(data),
+                            message: 'Vote Cast Successful'
+                        };
+                        res.setHeader('content-type', 'text/json');
+                        res.send(msg);
+                    }).catch((err) => {
+                        console.log(err);
+                        let msg = {
+                            status: 'failure',
+                            message: err.toString()
+                        };
+                        res.setHeader('content-type', 'text/json');
+                        res.send(msg);
+                    });
+
+                } catch (e) {
+                    console.log(e);
+                }
             }
         };
         app.post('/castVote', castVoteHandler);
@@ -334,6 +370,8 @@ async function main() {
                 res.send(concat(electionId));
                 return;
             } else {
+                res.setHeader('content-type', 'text/json');
+
                 contract.evaluateTransaction('calculateResult', electionId).then((data) => {
                     let ret = JSON.parse(data.toString());
 
@@ -463,6 +501,15 @@ async function main() {
             res.send(result.toString());
 
             console.log('query complete');
+        });
+
+        app.post('/deleteAll', async function (req, res) {
+            await contract.submitTransaction('deleteAll');
+
+            res.setHeader('content-type', 'text/json');
+            res.send(JSON.stringify({
+                status: 'Deletion Completed'
+            }));
         });
 
         const server = app.listen(PORT, function () {

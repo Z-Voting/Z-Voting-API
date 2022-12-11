@@ -15,7 +15,7 @@
     "author": "Hyperledger",
     "license": "Apache-2.0",
     "dependencies": {
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "fabric-ca-client": "~1.4.0",
         "fabric-network": "~1.4.0"
     },
